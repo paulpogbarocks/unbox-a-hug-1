@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Unbox a Hug</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&family=Quicksand:wght@500;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            color: #292524;
+        }
+
+        h1, h3 {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        header {
+            margin: 10px 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: #292524;
+            margin-bottom: 4px;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            color: #44403c;
+            font-weight: 600;
+            max-width: 280px;
+            margin: 0 auto;
+            line-height: 1.3;
+        }
+
+        main {
+            width: 100%;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .machine-frame {
+            position: relative;
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .glass-bowl {
+            position: relative;
+            width: 100%;
+            height: 190px;
+            background: linear-gradient(to bottom, rgba(186, 230, 253, 0.5), rgba(224, 242, 254, 0.3));
+            border: 4px solid #1c1917;
+            border-bottom: none;
+            border-radius: 140px 140px 20px 20px / 160px 160px 20px 20px;
+            box-shadow: 
+                inset 0 15px 25px rgba(255,255,255,0.6),
+                inset 0 -10px 20px rgba(0,0,0,0.05),
+                0 8px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .glass-shine {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top right, transparent, rgba(255,255,255,0.1) 40%, rgba(255,255,255,0.4));
+            pointer-events: none;
+            z-index: 12;
+            border-radius: 140px 140px 20px 20px / 160px 160px 20px 20px;
+        }
+        
+        .glass-reflection {
+            position: absolute;
+            top: 10px;
+            left: 25px;
+            width: 40px;
+            height: 80px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            transform: rotate(-15deg);
+            pointer-events: none;
+            filter: blur(1px);
+            z-index: 13;
+        }
+
+        .balls-chamber {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            width: 240px;
+            height: 120px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 6px;
+            z-index: 11;
+            pointer-events: none;
+        }
+
+        .chrome-divider {
+            width: 98%;
+            height: 12px;
+            background: #44403c;
+            border-radius: 20px;
+            border: 4px solid #1c1917;
+            z-index: 20;
+            margin-bottom: -6px;
+        }
+
+        .machine-base {
+            width: 96%;
+            background: linear-gradient(to bottom, #fb7185, #f43f5e);
+            border: 4px solid #1c1917;
+            border-radius: 0 0 40px 40px;
+            padding: 20px 10px 15px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 25;
+            box-shadow: 
+                0 15px 20px rgba(0, 0, 0, 0.25),
+                inset -10px 0 15px rgba(0,0,0,0.15),
+                inset 10px 0 15px rgba(255,255,255,0.3);
+        }
+
+        .crank-btn {
+            width: 76px;
+            height: 76px;
+            background: linear-gradient(to bottom, #fafaf9, #e7e5e4);
+            border: 4px solid #1c1917;
+            border-radius: 50%;
+            box-shadow: 0 6px 0px 0px #1c1917;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            outline: none;
+            transition: transform 0.1s, box-shadow 0.1s;
+            z-index: 40;
+            position: relative;
+        }
+
+        .crank-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0px 0px #1c1917;
+        }
+
+        .crank-dial {
+            width: 52px;
+            height: 52px;
+            background: #d6d3d1;
+            border: 4px dashed #78716c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+
+        .draw-text {
+            font-size: 0.7rem;
+            font-weight: 900;
+            color: #4c0519;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: rgba(255, 204, 213, 0.7);
+            padding: 4px 12px;
+            border-radius: 6px;
+            user-select: none;
+            z-index: 30;
+        }
+
+        .chute-box {
+            width: 80px;
+            height: 55px;
+            background: #292524;
+            border: 4px solid #1c1917;
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+            position: relative;
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.8);
+            z-index: 30;
+        }
+
+        .chute-landing {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 35;
+        }
+
+        /* Gacha Capsule Universal Design */
+        .gacha-ball {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #1c1917;
+            position: relative;
+            display: inline-block;
+            flex-shrink: 0;
+            box-shadow: 
+                inset -3px -3px 5px rgba(0,0,0,0.25),
+                inset 3px 3px 5px rgba(255,255,255,0.4),
+                0 3px 4px rgba(0,0,0,0.15);
+        }
+        .gacha-ball::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(28, 25, 23, 0.8);
+            top: 50%;
+            transform: translateY(-50%);
+            left: 0;
+        }
+
+        /* Tray Storage Section */
+        .tray-container {
+            width: 100%;
+            margin-top: 20px;
+            padding: 0 5px;
+        }
+
+        .tray-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #44403c;
+            margin-bottom: 8px;
+        }
+
+        .tray-shelf {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px;
+            background: rgba(245, 245, 244, 0.5);
+            border: 2px dashed #a8a29e;
+            border-radius: 16px;
+            min-height: 70px;
+            align-items: center;
+        }
+
+        .empty-msg {
+            font-size: 0.75rem;
+            color: #78716c;
+            font-style: italic;
+            width: 100%;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .saved-capsule-btn {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 2px solid #1c1917;
+            box-shadow: 2px 2px 0px 0px #1c1917;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            outline: none;
+        }
+
+        /* Overlay Framework */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(28, 25, 23, 0.9);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+
+        .presentation-box {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cap-half-left, .cap-half-right {
+            position: absolute;
+            width: 80px;
+            height: 160px;
+            border: 4px solid #1c1917;
+        }
+        
+        .cap-half-left {
+            left: 0;
+            border-radius: 80px 0 0 80px;
+            border-right: none;
+            transform-origin: right center;
+        }
+
+        .cap-half-right {
+            right: 0;
+            border-radius: 0 80px 80px 0;
+            border-left: none;
+            transform-origin: left center;
+        }
+
+        .capsule-tag {
+            position: absolute;
+            background: #1c1917;
+            color: #ffffff;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 2px solid #ffffff;
+            font-size: 0.85rem;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .action-btn {
+            margin-top: 25px;
+            background: #f43f5e;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 12px 30px;
+            border-radius: 30px;
+            border: 4px solid #1c1917;
+            box-shadow: 4px 4px 0px 0px #1c1917;
+            cursor: pointer;
+        }
+
+        /* Letter Modal Box */
+        .letter-card {
+            position: absolute;
+            width: 90%;
+            max-width: 300px;
+            background: #fdf6e2;
+            border: 4px solid #1c1917;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            z-index: 120;
+        }
+
+        .letter-header {
+            border-bottom: 2px dashed #d6d3d1;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .letter-header span {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            color: #e11d48;
+        }
+
+        .letter-header h3 {
+            font-size: 1.4rem;
+            color: #1c1917;
+        }
+
+        .letter-body {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #44403c;
+            font-weight: 600;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            white-space: pre-line;
+        }
+
+        .save-btn {
+            width: 100%;
+            background: #10b981;
+            color: white;
+            font-weight: 700;
+            padding: 10px;
+            border-radius: 12px;
+            border: 3px solid #1c1917;
+            box-shadow: 3px 3px 0px 0px #1c1917;
+            cursor: pointer;
+        }
+
+        footer {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #57534e;
+            margin: 10px 0;
+        }
+
+        /* Pure CSS Animations */
+        @keyframes jiggle {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-2px, 2px) rotate(-3deg); }
+            40% { transform: translate(2px, -2px) rotate(3deg); }
+            60% { transform: translate(-1px, 1px) rotate(-1deg); }
+            80% { transform: translate(1px, 2px) rotate(2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .jiggling { animation: jiggle 0.5s ease-in-out infinite; }
+
+        @keyframes spinDial {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spin-crank { animation: spinDial 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        @keyframes ballDrop {
+            0% { transform: translateY(-130px) scale(0.5); opacity: 0; }
+            60% { transform: translateY(10px) scale(1.05); opacity: 1; }
+            80% { transform: translateY(-4px) scale(0.98); }
+            100% { transform: translateY(0) scale(1); }
+        }
+        .dropped-ball { animation: ballDrop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        @keyframes splitLeft {
+            100% { transform: translateX(-140px) rotate(-45deg); opacity: 0; }
+        }
+        @keyframes splitRight {
+            100% { transform: translateX(140px) rotate(45deg); opacity: 0; }
+        }
+        .split-left { animation: splitLeft 0.5s ease-in forwards; }
+        .split-right { animation: splitRight 0.5s ease-in forwards; }
+
+        @keyframes paperUnfold {
+            0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .unfold-note { animation: paperUnfold 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>💝 Unbox a Hug</h1>
+        <p>Just some notes from your biggest fans</p>
+    </header>
+
+    <main>
+        <div class="machine-frame">
+            <!-- 3D Glass Bowl -->
+            <div class="glass-bowl">
+                <div class="glass-shine"></div>
+                <div class="glass-reflection"></div>
+            </div>
+
+            <!-- Balls Chamber Layer -->
+            <div id="balls-chamber" class="balls-chamber"></div>
+
+            <!-- Connecting Ring -->
+            <div class="chrome-divider"></div>
+
+            <!-- Machine Solid Base -->
+            <div class="machine-base">
+                <button id="crank-btn" class="crank-btn">
+                    <div id="crank-dial" class="crank-dial">🔄</div>
+                </button>
+                <div class="draw-text">Turn to Draw!</div>
+
+                <!-- Dispenser Chute -->
+                <div class="chute-box">
+                    <div id="chute-landing" class="chute-landing"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tray-container">
+            <div class="tray-title">📁 Your Saved Hugs:</div>
+            <div id="collection-tray" class="tray-shelf">
+                <span id="empty-tray-msg" class="empty-msg">Draw a ball to read a message!</span>
+            </div>
+        </div>
+    </main>
+
+    <footer>Made for the most gorgeous person alive</footer>
+
+    <div id="reveal-overlay" class="overlay hidden">
+        <div id="capsule-presentation-box" class="presentation-box">
+            <div id="cap-left" class="cap-half-left"></div>
+            <div id="cap-right" class="cap-half-right"></div>
+            <div id="capsule-label" class="capsule-tag">Someone</div>
+        </div>
+
+        <div id="prompt-container">
+            <button id="open-capsule-btn" class="action-btn">✨ OPEN HUG!</button>
+        </div>
+
+        <div id="opened-letter" class="letter-card hidden">
+            <div class="letter-header">
+                <span>A Message From</span>
+                <h3 id="letter-sender">Sender Name</h3>
+            </div>
+            <div class="letter-body" id="letter-content">Message Content...</div>
+            <button id="close-letter-btn" class="save-btn">Save & Keep Drawing 📁</button>
+        </div>
+    </div>
+
+    <!-- ENGINE CONTROL HANDLERS -->
+    <script>
+        // Note: The structure retains the visual collection indices, but the extraction queue is now strict first-in first-out.
+        const notes = [
+            { id: 1, sender: "Your Husband", text: "To the prettiest girl in the world 😍, who’s also the bravest of the brave ⚔️, and the coolest of the cool 😎, these next 6 months are going to fly by because you are going to have so much fun travelling with all your loved ones ✈️ (your husband included inshallah). Don’t get too excited about the islamic words i know i know please chilllll with the glazin breh i know you like wan ☪️ …..but nonetheless, i can’t wait to watch all your vlogs and you are going to glow brighter than the sun sweetheart 🌞 you know i’m always going to be here for you and i can’t wait to be right next to you again! Love you a ton ❤️ meanwhile i shall plot to kidnap the one and only caramia bebesh while you are gone…she will be in safe hands.", color: "#fca5a5" },
+            { id: 2, sender: "Riya", text: "dear sonziepoo…i hope you have the most wonderful time during your exchange❤️ you are so bubbly and sweet and i think you will make lovely friends and memories there and also i never got to go on exchange maybe you should create a tele channel so i can live vicariously through you👅 i think you should try sum 🍄 too🤭 HAVE THE BESTTT TRIP dont be afraid or nervous IT WILL BE AMAZING", color: "#93c5fd" },
+            { id: 3, sender: "Samanvita", text: "HIII SONIA! i hope you have lots and lots of fun on exchange, travelling the world, experiencing new things, and learning about yourself <333 just be safe and make the most out of these 6 months, they are gna be the BESTTT ♥️ we are always just a text away if you need anything :-))) sending much much love and warmth to you!!!!", color: "#c084fc" },
+            { id: 4, sender: "Cara Mia", text: "ruff! ruff! hi mummy i miss you so much why must you leave me and go😢 i promise to be a good girl while you are gone and i will be a big girl when you come back mummy 💓 please be safe and buy me so many treatyweaties, i deserve them all!!!!! love you ruff!", color: "#86efac" },
+            { id: 5, sender: "Sienna Gill", text: "*whimpering sounds* to the best pawrent ever, just know that i will be watching over you every step of the way… and please buy my baby sister cara as many treats as you can ❤️🐶", color: "#fde047" },
+            { id: 6, sender: "Milano", text: "hey babez, remember me? well i know you miss me, and i miss you too. can’t forget all that bunda grinding up on me, had me hard for days 🍆. so why don’t you just holla at me real quick ? you know where to find me, and if you don’t, look inside your heart and think again. xoxo 💋", color: "#5eead4" }
+        ];
+
+        // Keeps a copy sorted for rendering visual items, but draws from index 0 sequentially
+        let remainingNotes = [...notes];
+        let openedNotes = [];
+        let currentlyDrawing = null;
+        let isReviewMode = false;
+
+        const ballsChamber = document.getElementById('balls-chamber');
+        const crankBtn = document.getElementById('crank-btn');
+        const crankDial = document.getElementById('crank-dial');
+        const chuteLanding = document.getElementById('chute-landing');
+        const revealOverlay = document.getElementById('reveal-overlay');
+        const openCapsuleBtn = document.getElementById('open-capsule-btn');
+        const promptContainer = document.getElementById('prompt-container');
+        const capLeft = document.getElementById('cap-left');
+        const capRight = document.getElementById('cap-right');
+        const capsuleLabel = document.getElementById('capsule-label');
+        const openedLetter = document.getElementById('opened-letter');
+        const letterSender = document.getElementById('letter-sender');
+        const letterContent = document.getElementById('letter-content');
+        const closeLetterBtn = document.getElementById('close-letter-btn');
+        const collectionTray = document.getElementById('collection-tray');
+        const emptyTrayMsg = document.getElementById('empty-tray-msg');
+
+        function renderChamberBalls() {
+            ballsChamber.innerHTML = '';
+            remainingNotes.forEach((note, index) => {
+                const ball = document.createElement('div');
+                ball.className = "gacha-ball";
+                ball.style.backgroundColor = note.color;
+                const randomRotation = (index % 2 === 0 ? 8 : -8) * (index + 1);
+                ball.style.transform = `rotate(${randomRotation}deg)`;
+                ballsChamber.appendChild(ball);
+            });
+        }
+
+        function jiggleChamberBalls() {
+            const balls = ballsChamber.querySelectorAll('.gacha-ball');
+            balls.forEach(ball => ball.classList.add('jiggling'));
+        }
+
+        function stopJiggleChamberBalls() {
+            const balls = ballsChamber.querySelectorAll('.gacha-ball');
+            balls.forEach(ball => ball.classList.remove('jiggling'));
+        }
+
+        function handleCrankTurn(e) {
+            if(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            if (remainingNotes.length === 0) {
+                alert("🎉 You've opened all your messages! Tap any capsule below to re-read them.");
+                return;
+            }
+            if (currentlyDrawing) return; 
+
+            currentlyDrawing = true; 
+            crankDial.classList.add('spin-crank');
+            jiggleChamberBalls();
+
+            setTimeout(() => {
+                // Fixed: Shift items sequentially from the front of the array (0 index) instead of randomly selection
+                const selectedNote = remainingNotes.shift();
+                currentlyDrawing = selectedNote; 
+                
+                renderChamberBalls();
+                stopJiggleChamberBalls();
+                dispenseBall(selectedNote);
+            }, 800);
+        }
+
+        crankBtn.addEventListener('click', handleCrankTurn);
+        crankBtn.addEventListener('touchstart', handleCrankTurn);
+
+        crankDial.addEventListener('animationend', () => {
+            crankDial.classList.remove('spin-crank');
+        });
+
+        function dispenseBall(note) {
+            chuteLanding.innerHTML = '';
+            isReviewMode = false; 
+            
+            const dropBall = document.createElement('div');
+            dropBall.className = "gacha-ball dropped-ball";
+            dropBall.style.backgroundColor = note.color;
+            chuteLanding.appendChild(dropBall);
+
+            dropBall.addEventListener('animationend', () => {
+                setTimeout(() => presentCapsule(note), 200);
+            });
+        }
+
+        function presentCapsule(note) {
+            capLeft.style.backgroundColor = note.color;
+            capRight.style.backgroundColor = note.color;
+            capsuleLabel.innerText = `From: ${note.sender}`;
+
+            capLeft.className = "cap-half-left";
+            capRight.className = "cap-half-right";
+            capsuleLabel.style.opacity = '1';
+            
+            revealOverlay.classList.remove('hidden');
+            promptContainer.classList.remove('hidden');
+            openedLetter.classList.add('hidden');
+            capLeft.style.display = 'block';
+            capRight.style.display = 'block';
+        }
+
+        function handleOpenCapsule(e) {
+            if(e) e.preventDefault();
+            promptContainer.classList.add('hidden');
+            capsuleLabel.style.opacity = '0';
+            
+            capLeft.classList.add('split-left');
+            capRight.classList.add('split-right');
+
+            setTimeout(() => {
+                letterSender.innerText = currentlyDrawing.sender;
+                letterContent.innerText = currentlyDrawing.text;
+                
+                openedLetter.classList.remove('hidden');
+                openedLetter.classList.add('unfold-note');
+            }, 300);
+        }
+
+        openCapsuleBtn.addEventListener('click', handleOpenCapsule);
+        openCapsuleBtn.addEventListener('touchstart', handleOpenCapsule);
+
+        function handleCloseLetter(e) {
+            if(e) e.preventDefault();
+            if (!isReviewMode && currentlyDrawing) {
+                const alreadyExists = openedNotes.some(n => n.id === currentlyDrawing.id);
+                if (!alreadyExists) {
+                    openedNotes.push(currentlyDrawing);
+                    updateCollectionTray();
+                }
+            }
+
+            revealOverlay.classList.add('hidden');
+            chuteLanding.innerHTML = '';
+            currentlyDrawing = null;
+        }
+
+        closeLetterBtn.addEventListener('click', handleCloseLetter);
+        closeLetterBtn.addEventListener('touchstart', handleCloseLetter);
+
+        function updateCollectionTray() {
+            if (openedNotes.length > 0) {
+                emptyTrayMsg.classList.add('hidden');
+            }
+
+            collectionTray.innerHTML = '';
+            openedNotes.forEach((note) => {
+                const capsuleItem = document.createElement('button');
+                capsuleItem.className = "saved-capsule-btn";
+                capsuleItem.style.backgroundColor = note.color;
+                capsuleItem.innerHTML = `✉️ ${note.sender}`;
+
+                function triggerOpenSaved(e) {
+                    if(e) e.preventDefault();
+                    openSavedLetter(note);
+                }
+                
+                capsuleItem.addEventListener('click', triggerOpenSaved);
+                capsuleItem.addEventListener('touchstart', triggerOpenSaved);
+                
+                collectionTray.appendChild(capsuleItem);
+            });
+        }
+
+        function openSavedLetter(note) {
+            currentlyDrawing = note;
+            isReviewMode = true; 
+            
+            capLeft.style.display = 'none';
+            capRight.style.display = 'none';
+            capsuleLabel.style.opacity = '0';
+            promptContainer.classList.add('hidden');
+
+            letterSender.innerText = note.sender;
+            letterContent.innerText = note.text;
+            
+            revealOverlay.classList.remove('hidden');
+            openedLetter.classList.remove('hidden');
+            openedLetter.classList.add('unfold-note');
+        }
+
+        renderChamberBalls();
+    </script>
+</body>
+</html>
